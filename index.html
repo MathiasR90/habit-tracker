@@ -253,7 +253,7 @@ function updateSummary(habits){
   const doneDaily = habits.filter(h=>h.type==='daily').reduce((a,h)=> a + (h.records[todayKey]==='ok'?1:0), 0);
   const totalDaily = habits.filter(h=>h.type==='daily').length;
   document.getElementById('summary').textContent = `${doneDaily}/${totalDaily} habitudes quotidiennes faites aujourd'hui`;
-  document.getElementById('todayStr').textContent=`— ${formatDate(today)}`;
+  document.getElementById('todayStr').textContent= formatDate(today);
 }
 
 // ===== Delete flow =====
