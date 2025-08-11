@@ -1,0 +1,14 @@
+{
+  "name": "Ma Chaîne — Habitudes",
+  "short_name": "Ma Chaîne",
+  "description": "Suivi d’habitudes quotidiennes et mensuelles.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F7F7F7",
+  "theme_color": "#2B6BE3",
+  "icons": [
+    { "src": "icons/icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
