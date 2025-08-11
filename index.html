@@ -79,6 +79,10 @@ header {margin-bottom:8px;}
 /* Day/Month labels */
 .day-label {text-align:center; font-size:12px; margin-bottom:4px; font-weight:300;}
 .day-label.today {font-weight:900;}
+.header-sep {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 8px 0; }
 </style>
 </head>
 <body>
@@ -86,6 +90,7 @@ header {margin-bottom:8px;}
   <header>
     <h1><span id="todayStr"></span></h1>
     <div id="summary">0/0 quotidiennes faites aujourd'hui</div>
+    <hr class="header-sep">
   </header>
 
   <div class="section" id="daily-section">
