@@ -236,6 +236,16 @@ function renderHabitCard(habit, kind){
   row.scrollLeft = row.scrollWidth;
 
   card.appendChild(row);
+
+  // force le scroll tout à droite après que la ligne soit insérée dans le DOM
+  requestAnimationFrame(() => {
+    row.scrollLeft = row.scrollWidth;
+    // double passe pour Safari/iOS
+    requestAnimationFrame(() => {
+      row.scrollLeft = row.scrollWidth;
+    });
+  });
+  
   return card;
 }
 
