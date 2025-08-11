@@ -292,7 +292,7 @@ document.getElementById('addBtn').onclick = () => {
 document.getElementById('habitInput').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('addBtn').click(); });
 
 // initial render
-function init(){ document.getElementById('todayStr').textContent=`${formatDate(today)}`; render(); }
+function init(){ document.getElementById('todayStr').textContent = formatDate(today); render(); }
 init();
 </script>
 <script>
