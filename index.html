@@ -85,7 +85,7 @@ header {margin-bottom:8px;}
 <div class="app">
   <header>
     <h1><span id="todayStr"></span></h1>
-    <div id="summary">0/0 habitudes quotidiennes faites aujourd'hui</div>
+    <div id="summary">0/0 quotidiennes faites aujourd'hui</div>
   </header>
 
   <div class="section" id="daily-section">
@@ -242,7 +242,7 @@ function renderHabitCard(habit, kind){
 function updateSummary(habits){
   const doneDaily = habits.filter(h=>h.type==='daily').reduce((a,h)=> a + (h.records[todayKey]==='ok'?1:0), 0);
   const totalDaily = habits.filter(h=>h.type==='daily').length;
-  document.getElementById('summary').textContent = `${doneDaily}/${totalDaily} quotidiennes faites aujourd'hui`;
+  document.getElementById('summary').textContent = `${doneDaily}/${totalDaily} habitudes quotidiennes faites aujourd'hui`;
   document.getElementById('todayStr').textContent=`— ${formatDate(today)}`;
 }
 
@@ -292,7 +292,7 @@ document.getElementById('addBtn').onclick = () => {
 document.getElementById('habitInput').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('addBtn').click(); });
 
 // initial render
-function init(){ document.getElementById('todayStr').textContent=`— ${formatDate(today)}`; render(); }
+function init(){ document.getElementById('todayStr').textContent=`${formatDate(today)}`; render(); }
 init();
 </script>
 <script>
