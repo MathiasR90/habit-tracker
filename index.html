@@ -60,7 +60,21 @@ header {margin-bottom:8px;}
 .input {padding:12px; border-radius:12px; border:1px solid var(--border); font-size:16px;}
 #habitInput { min-width: 0; }
 .select {padding:12px; border-radius:12px; border:1px solid var(--border); font-size:16px; background:var(--card);} 
-.btn {font-size: 16px; padding: 5px 12px; border-radius:12px; background:var(--accent); color:#fff; border:none; font-weight:600; cursor:pointer;}
+.btn {
+  width: 44px; /* Taille du bouton */
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: orange; /* ou orange si tu veux */
+  color: #fff;
+  border: none;
+  font-size: 24px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 /* Couleurs demandées */
 #habitType { background-color:#e0e0e0; color:#333; }
 #addBtn { background-color:orange; color:#fff; }
@@ -118,7 +132,7 @@ header {margin-bottom:8px;}
     <option value="daily">Quotidienne</option>
     <option value="monthly">Mensuelle</option>
   </select>
-  <button id="addBtn" class="btn">Ajouter</button>
+  <button id="addBtn" class="btn" aria-label="Ajouter">+</button>
 </div>
 
 <script>
