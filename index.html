@@ -61,19 +61,26 @@ header {margin-bottom:8px;}
 #habitInput { min-width: 0; }
 .select {padding:12px; border-radius:12px; border:1px solid var(--border); font-size:16px; background:var(--card);} 
 .btn {
-  width: 44px; /* Taille du bouton */
-  height: 44px;
-  padding: 0;
-  border-radius: 50%;
-  background: orange; /* ou orange si tu veux */
+  background: orange;
   color: #fff;
   border: none;
-  font-size: 24px;
-  font-weight: 400;
+  font-weight: 600;
+  cursor: pointer;
+  
+  /* Cercle parfait */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+
+  /* Centrage parfait du + */
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+
+  /* Supprimer l'ancien padding */
+  padding: 0;
+  
+  font-size: 20px; /* Taille du + */
 }
 /* Couleurs demandées */
 #habitType { background-color:#e0e0e0; color:#333; }
