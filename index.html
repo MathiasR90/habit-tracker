@@ -52,7 +52,7 @@ header {margin-bottom:8px;}
 .controls {
   position:fixed; bottom:0; left:0; right:0; z-index:1000;
   display:grid; grid-template-columns: minmax(0, 0.75fr) auto auto; gap:6px;
-  padding:12px 12px calc(12px + env(safe-area-inset-bottom));
+  padding: 12px calc(4px + env(safe-area-inset-right)) 12px 8px;
   /* fallback anciens Safari */
   padding-bottom: calc(12px + constant(safe-area-inset-bottom));
   background:var(--bg); border-top:1px solid var(--border);
