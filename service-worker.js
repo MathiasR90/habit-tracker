@@ -1,9 +1,10 @@
 /* Simple cache-first SW for GitHub Pages */
-const CACHE = "ma-chaine-v6";
+const CACHE = "ma-chaine-v7";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
+  "./Sortable.min.js",
   // Ajoute ici d'autres fichiers si tu en as (images, sons, etc.)
 ];
 

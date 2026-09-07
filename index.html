@@ -35,8 +35,11 @@ body {margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Int
   padding-bottom: calc(112px + constant(safe-area-inset-bottom));
 } 
 header {margin-bottom:8px;}
-.card {background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px; margin:12px 0; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;}
-.card.dragging {opacity:.72; box-shadow:0 12px 30px rgba(0,0,0,.18); transform:scale(.99);}
+.card {background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px; margin:12px 0; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; transition:box-shadow .18s ease, opacity .18s ease;}
+.card.sortable-ghost {opacity:.22; border-style:dashed;}
+.card.sortable-chosen {box-shadow:0 8px 24px rgba(0,0,0,.16);}
+.card.sortable-fallback {opacity:.96; box-shadow:0 16px 36px rgba(0,0,0,.25);}
+body.sorting, body.sorting .drag-handle {cursor:grabbing;}
 .habit-head {display:flex; justify-content:space-between; align-items:center; font-weight:600;} 
 .habit-title {display:flex; align-items:center; min-width:0;}
 .drag-handle {touch-action:none; cursor:grab; background:transparent; border:0; color:var(--muted); font-size:22px; line-height:1; padding:8px 10px 8px 0;}
@@ -161,6 +164,7 @@ header {margin-bottom:8px;}
   <button id="addBtn" class="btn" aria-label="Ajouter">+</button>
 </div>
 
+<script src="./Sortable.min.js"></script>
 <script>
 // ===== Config & State =====
 const STORAGE_KEY = 'habits_v3';
@@ -206,46 +210,45 @@ function saveHabitOrder(kind,orderedIds){
   let index=0;
   save(habits.map(h=>h.type===kind ? (reordered[index++]||h) : h));
 }
-function enableHabitReorder(handle,card,kind){
-  let dragging=false;
-  let pointerId=null;
-
-  handle.addEventListener('pointerdown',(e)=>{
-    if(e.button!==undefined && e.button!==0) return;
-    e.preventDefault();
-    dragging=true;
-    pointerId=e.pointerId;
-    card.classList.add('dragging');
-    handle.setAttribute('aria-grabbed','true');
-    handle.setPointerCapture(pointerId);
+let habitSortables=[];
+function enableHabitReorder(list,kind){
+  return Sortable.create(list,{
+    draggable:'.card',
+    handle:'.drag-handle',
+    direction:'vertical',
+    animation:220,
+    easing:'cubic-bezier(.2,.8,.2,1)',
+    forceFallback:true,
+    fallbackOnBody:true,
+    fallbackTolerance:3,
+    touchStartThreshold:3,
+    ghostClass:'sortable-ghost',
+    chosenClass:'sortable-chosen',
+    fallbackClass:'sortable-fallback',
+    scroll:true,
+    forceAutoScrollFallback:true,
+    scrollSensitivity:90,
+    scrollSpeed:14,
+    bubbleScroll:true,
+    onChoose:(event)=>event.item.querySelector('.drag-handle')?.setAttribute('aria-grabbed','true'),
+    onUnchoose:(event)=>{
+      event.item.querySelector('.drag-handle')?.setAttribute('aria-grabbed','false');
+      document.body.classList.remove('sorting');
+    },
+    onStart:()=>document.body.classList.add('sorting'),
+    onEnd:()=>{
+      document.body.classList.remove('sorting');
+      const ids=[...list.querySelectorAll('.card')].map(item=>item.dataset.habitId);
+      saveHabitOrder(kind,ids);
+    }
   });
-
-  handle.addEventListener('pointermove',(e)=>{
-    if(!dragging) return;
-    e.preventDefault();
-    const list=card.parentElement;
-    const siblings=[...list.querySelectorAll('.card:not(.dragging)')];
-    const next=siblings.find(item=>e.clientY < item.getBoundingClientRect().top + item.offsetHeight/2);
-    if(next) list.insertBefore(card,next);
-    else list.appendChild(card);
-
-    const edge=72;
-    if(e.clientY<edge) window.scrollBy(0,-12);
-    else if(e.clientY>window.innerHeight-edge) window.scrollBy(0,12);
-  });
-
-  const finish=()=>{
-    if(!dragging) return;
-    dragging=false;
-    card.classList.remove('dragging');
-    handle.setAttribute('aria-grabbed','false');
-    if(pointerId!==null && handle.hasPointerCapture(pointerId)) handle.releasePointerCapture(pointerId);
-    const ids=[...card.parentElement.querySelectorAll('.card')].map(item=>item.dataset.habitId);
-    saveHabitOrder(kind,ids);
-    pointerId=null;
-  };
-  handle.addEventListener('pointerup',finish);
-  handle.addEventListener('pointercancel',finish);
+}
+function refreshHabitReorder(){
+  habitSortables.forEach(sortable=>sortable.destroy());
+  habitSortables=[
+    enableHabitReorder(document.getElementById('daily-list'),'daily'),
+    enableHabitReorder(document.getElementById('monthly-list'),'monthly')
+  ];
 }
 
 // ===== Renderers =====
@@ -262,6 +265,7 @@ function render(){
   daily.forEach(h=> dailyList.appendChild(renderHabitCard(h, 'daily')));
   monthly.forEach(h=> monthlyList.appendChild(renderHabitCard(h, 'monthly')));
 
+  refreshHabitReorder();
   updateSummary(habits);
 }
 
@@ -282,7 +286,6 @@ function renderHabitCard(habit, kind){
 
   head.appendChild(title); head.appendChild(right);
   card.appendChild(head);
-  enableHabitReorder(drag,card,kind);
 
   const row=document.createElement('div'); row.className='row';
   const span = kind==='daily' ? daysSpan() : monthsSpan();
