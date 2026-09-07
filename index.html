@@ -254,11 +254,17 @@ function renderHabitCard(habit, kind){
     if(isFuture) cell.classList.add('locked');
 
     if(!isFuture){
-      let pressTimer=null; let clickTimer=null;
+      let pressTimer=null; let clickTimer=null; let suppressClickUntil=0;
       const clearPress=()=>{ if(pressTimer) clearTimeout(pressTimer); pressTimer=null; };
       const clearClick=()=>{ if(clickTimer) clearTimeout(clickTimer); clickTimer=null; };
+      const resetWithLongPress=()=>{
+        suppressClickUntil=Date.now()+1000;
+        clearClick();
+        updateCellState(habit,key,undefined,cell,streak,kind);
+      };
       // click -> ok if empty
       cell.addEventListener('click',(e)=>{
+        if(Date.now()<suppressClickUntil) return;
         if(e.detail>1) return; // let dblclick win
         clearClick();
         clickTimer=setTimeout(()=>{
@@ -268,15 +274,16 @@ function renderHabitCard(habit, kind){
       });
       // dblclick -> fail if empty
       cell.addEventListener('dblclick',()=>{
+        if(Date.now()<suppressClickUntil) return;
         clearClick();
         if(getState(habit,habit.id,key)!==undefined){ nudge(cell); return; }
         updateCellState(habit,key,'fail',cell,streak,kind);
       });
       // long press -> reset always
-      cell.addEventListener('mousedown',()=>{ pressTimer=setTimeout(()=>{ clearClick(); updateCellState(habit,key,undefined,cell,streak,kind); }, LONG_PRESS_RESET); });
+      cell.addEventListener('mousedown',()=>{ pressTimer=setTimeout(resetWithLongPress, LONG_PRESS_RESET); });
       cell.addEventListener('mouseup',clearPress);
       cell.addEventListener('mouseleave',clearPress);
-      cell.addEventListener('touchstart',()=>{ pressTimer=setTimeout(()=>{ clearClick(); updateCellState(habit,key,undefined,cell,streak,kind); }, LONG_PRESS_RESET); }, {passive:true});
+      cell.addEventListener('touchstart',()=>{ pressTimer=setTimeout(resetWithLongPress, LONG_PRESS_RESET); }, {passive:true});
       cell.addEventListener('touchend',clearPress,{passive:true});
     }
 
