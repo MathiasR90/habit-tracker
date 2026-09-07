@@ -1,5 +1,5 @@
 /* Simple cache-first SW for GitHub Pages */
-const CACHE = "ma-chaine-v2";
+const CACHE = "ma-chaine-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -23,6 +23,21 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {
   const req = e.request;
+  if (req.method !== "GET") return;
+
+  // Toujours tenter le réseau pour la page principale afin que les nouvelles
+  // versions ne restent pas bloquées derrière une ancienne copie en cache.
+  if (req.mode === "navigate") {
+    e.respondWith(
+      fetch(req, { cache: "no-store" }).then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((cache) => cache.put("./index.html", copy));
+        return res;
+      }).catch(() => caches.match("./index.html"))
+    );
+    return;
+  }
+
   e.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
