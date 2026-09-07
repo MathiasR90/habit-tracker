@@ -185,6 +185,16 @@ function nudge(el){ el.style.transform='scale(0.96)'; setTimeout(()=>{ el.style.
 
 function getState(h,id,key){ return (h && h.records) ? h.records[key] : undefined; }
 function setStateById(id,key,state){ const all=load(); const h=all.find(x=>x.id===id); if(!h) return; if(state===undefined) delete h.records[key]; else h.records[key]=state; save(all); }
+function updateCellState(habit,key,state,cell,streak,kind){
+  setStateById(habit.id,key,state);
+  if(state===undefined) delete habit.records[key];
+  else habit.records[key]=state;
+
+  cell.classList.remove('ok','fail','future');
+  cell.classList.add(state==='ok' ? 'ok' : state==='fail' ? 'fail' : 'future');
+  streak.textContent = `🔥 ${kind==='daily'?computeStreakDaily(habit):computeStreakMonthly(habit)}`;
+  updateSummary(load());
+}
 
 // ===== Renderers =====
 function render(){
@@ -252,22 +262,20 @@ function renderHabitCard(habit, kind){
         clearClick();
         clickTimer=setTimeout(()=>{
           if(getState(habit,habit.id,key)!==undefined){ nudge(cell); return; }
-          setStateById(habit.id,key,'ok');
-          render();
+          updateCellState(habit,key,'ok',cell,streak,kind);
         }, 250);
       });
       // dblclick -> fail if empty
       cell.addEventListener('dblclick',()=>{
         clearClick();
         if(getState(habit,habit.id,key)!==undefined){ nudge(cell); return; }
-        setStateById(habit.id,key,'fail');
-        render();
+        updateCellState(habit,key,'fail',cell,streak,kind);
       });
       // long press -> reset always
-      cell.addEventListener('mousedown',()=>{ pressTimer=setTimeout(()=>{ clearClick(); setStateById(habit.id,key,undefined); render(); }, LONG_PRESS_RESET); });
+      cell.addEventListener('mousedown',()=>{ pressTimer=setTimeout(()=>{ clearClick(); updateCellState(habit,key,undefined,cell,streak,kind); }, LONG_PRESS_RESET); });
       cell.addEventListener('mouseup',clearPress);
       cell.addEventListener('mouseleave',clearPress);
-      cell.addEventListener('touchstart',()=>{ pressTimer=setTimeout(()=>{ clearClick(); setStateById(habit.id,key,undefined); render(); }, LONG_PRESS_RESET); }, {passive:true});
+      cell.addEventListener('touchstart',()=>{ pressTimer=setTimeout(()=>{ clearClick(); updateCellState(habit,key,undefined,cell,streak,kind); }, LONG_PRESS_RESET); }, {passive:true});
       cell.addEventListener('touchend',clearPress,{passive:true});
     }
 
