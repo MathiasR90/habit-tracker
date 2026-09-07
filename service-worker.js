@@ -1,5 +1,5 @@
 /* Simple cache-first SW for GitHub Pages */
-const CACHE = "ma-chaine-v5";
+const CACHE = "ma-chaine-v6";
 const ASSETS = [
   "./",
   "./index.html",
